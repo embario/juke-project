@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      SOCIAL_AUTH_SPOTIFY_KEY: test-key
+      SOCIAL_AUTH_SPOTIFY_SECRET: test-secret
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Pull application images
+        run: docker compose -f docker-compose.ci.yml pull
+
+      - name: Build backend image
+        run: docker compose -f docker-compose.ci.yml build web
+
+      - name: Start services
+        run: docker compose -f docker-compose.ci.yml up -d
+
+      - name: List containers
+        run: docker ps
+
+      - name: Lint (flake8)
+        run: docker compose -f docker-compose.ci.yml exec web flake8
+
+      - name: Check for missing migrations
+        run: docker compose -f docker-compose.ci.yml exec web python manage.py makemigrations --check --no-input
+
+      - name: Frontend tests
+        run: docker compose -f docker-compose.ci.yml run --rm frontend npm run test
+
+      - name: Backend tests
+        run: docker compose -f docker-compose.ci.yml exec web python manage.py test
+
+      - name: Tear down
+        if: always()
+        run: docker compose -f docker-compose.ci.yml down

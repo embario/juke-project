@@ -11,3 +11,4 @@ ipython
 ipdb
 spotipy
 pillow
+django-cors-headers
