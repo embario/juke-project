@@ -48,7 +48,8 @@ REST_REGISTRATION = {
 
     'REGISTER_VERIFICATION_EMAIL_TEMPLATES': {
         'subject': 'juke_auth/register/subject.txt',
-        'text_body': 'juke_auth/register/body.html',
+        'text_body': 'juke_auth/register/body.txt',
+        'html_body': 'juke_auth/register/body.html',
     }
 }
 
@@ -76,6 +77,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_registration',
@@ -89,6 +91,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -213,3 +216,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+cors_origins = os.environ.get("CORS_ALLOWED_ORIGINS")
+if cors_origins:
+    CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_origins.split(",") if origin.strip()]
+else:
+    CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]

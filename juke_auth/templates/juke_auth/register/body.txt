@@ -1,0 +1,3 @@
+Welcome to Juke! Let's get listening.
+
+Please verify your account by visiting: {{ verification_url }}

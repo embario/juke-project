@@ -2,6 +2,13 @@
 __pycache__/
 *.py[cod]
 *$py.class
+.DS_Store
+.vscode
+node_modules
+
+
+static/media/albums/*.png
+static/media/artists/*.png
 
 # Database
 data/
