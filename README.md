@@ -49,8 +49,8 @@ Backend services for the Juke Music Service now ship with a React-based analyst 
 
 ## Mobile app
 
-- The native SwiftUI client from the former iOS repository has been moved into `mobile/`.
-- Open the project with Xcode via `xed mobile/ios/juke-iOS.xcodeproj`.
+- Platform projects now live in `mobile/<platform>/<project>` to make room for future apps (for example, `mobile/android/juke` and `mobile/ios/juke`).
+- Open the iOS app with Xcode via `xed mobile/ios/juke/juke-iOS.xcodeproj`.
 - Use the existing `juke-iOS` scheme for running on simulators or devices; it continues to build against the same bundle identifiers.
 
 ## Tests

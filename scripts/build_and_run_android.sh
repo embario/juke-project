@@ -3,7 +3,9 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-ANDROID_APP_DIR="${REPO_ROOT}/mobile/android"
+ANDROID_ROOT="${REPO_ROOT}/mobile/android"
+ANDROID_PROJECT_NAME="${ANDROID_PROJECT_NAME:-juke}"
+ANDROID_APP_DIR="${ANDROID_ROOT}/${ANDROID_PROJECT_NAME}"
 API_LEVEL="36"
 SYSTEM_IMAGE="system-images;android-${API_LEVEL};google_apis;arm64-v8a"
 AVD_NAME="jukeApi${API_LEVEL}"
