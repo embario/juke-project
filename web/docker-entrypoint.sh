@@ -3,6 +3,10 @@
 RUNTIME_ENV=${JUKE_RUNTIME_ENV:-development}
 FRONTEND_PORT=${FRONTEND_PORT:-5173}
 
+if [ "$#" -gt 0 ]; then
+  exec "$@"
+fi
+
 if [ "$RUNTIME_ENV" = "development" ]; then
   exec npm run dev -- --host 0.0.0.0 --port "$FRONTEND_PORT"
 fi
