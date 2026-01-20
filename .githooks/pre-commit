@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SECTION_DIVIDER="----------------------------------------"
+
+echo "${SECTION_DIVIDER}"
+echo "Running backend lint (flake8)"
+( cd backend && flake8 )
+
+echo "${SECTION_DIVIDER}"
+echo "Running web lint (npm run lint)"
+( cd web && npm run lint )
+
+echo "${SECTION_DIVIDER}"
+echo "All linters passed"
