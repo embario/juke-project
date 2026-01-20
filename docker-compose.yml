@@ -12,7 +12,7 @@ services:
     ports:
       - "6379:6379"
 
-  web:
+  backend:
     build: .
     command: bash run_dev.sh
     ports:
@@ -57,7 +57,7 @@ services:
       - RECOMMENDER_MODEL_VERSION=${RECOMMENDER_MODEL_VERSION:-v1.0.0}
       - RECOMMENDER_VECTOR_DIM=${RECOMMENDER_VECTOR_DIM:-32}
 
-  frontend:
+  web:
     build:
       context: ./web
       args:
@@ -69,7 +69,7 @@ services:
       - ./web:/app
       - /app/node_modules
     depends_on:
-      - web
+      - backend
     env_file: .env
     environment:
       - VITE_API_BASE_URL=${BACKEND_URL:?Set BACKEND_URL in .env}
