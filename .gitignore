@@ -151,4 +151,9 @@ web/src/**/*.js
 web/src/**/*.js.map
 
 # Local simulator exports
-iOS/
+/iOS/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcuserdatad/
+*.xcuserstate

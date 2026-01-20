@@ -1,0 +1,676 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		03DBEADB27F2326F0032F689 /* juke_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBEADA27F2326F0032F689 /* juke_iOSApp.swift */; };
+		03DBEADD27F2326F0032F689 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBEADC27F2326F0032F689 /* ContentView.swift */; };
+		03DBEADF27F232700032F689 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03DBEADE27F232700032F689 /* Assets.xcassets */; };
+		03DBEAE227F232700032F689 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03DBEAE127F232700032F689 /* Preview Assets.xcassets */; };
+		03DBEAEC27F232700032F689 /* juke_iOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBEAEB27F232700032F689 /* juke_iOSTests.swift */; };
+		03DBEAF627F232700032F689 /* juke_iOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBEAF527F232700032F689 /* juke_iOSUITests.swift */; };
+		03DBEAF827F232700032F689 /* juke_iOSUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBEAF727F232700032F689 /* juke_iOSUITestsLaunchTests.swift */; };
+		03DBEB0527F233E00032F689 /* MusicProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBEB0427F233E00032F689 /* MusicProfile.swift */; };
+		03DBEB0727F2351A0032F689 /* MusicResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBEB0627F2351A0032F689 /* MusicResource.swift */; };
+		04A0F0022A8A7F2D00000001 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A0F0012A8A7F2D00000001 /* APIClient.swift */; };
+		04A0F0122A8A7F2D00000001 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A0F0112A8A7F2D00000001 /* AuthService.swift */; };
+		04A0F0222A8A7F2D00000001 /* ProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A0F0212A8A7F2D00000001 /* ProfileService.swift */; };
+		04A0F0322A8A7F2D00000001 /* CatalogService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A0F0312A8A7F2D00000001 /* CatalogService.swift */; };
+		04A0F0422A8A7F2D00000001 /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A0F0412A8A7F2D00000001 /* SessionStore.swift */; };
+		04A0F0522A8A7F2D00000001 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A0F0512A8A7F2D00000001 /* AuthViewModel.swift */; };
+		04A0F0622A8A7F2D00000001 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A0F0612A8A7F2D00000001 /* SearchViewModel.swift */; };
+		04A0F0722A8A7F2D00000001 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A0F0712A8A7F2D00000001 /* AuthView.swift */; };
+		04A0F0822A8A7F2D00000001 /* SearchDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A0F0812A8A7F2D00000001 /* SearchDashboardView.swift */; };
+		04A0F0B32A8A7F2D00000001 /* JukeDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A0F0B12A8A7F2D00000001 /* JukeDesignSystem.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		03DBEAE827F232700032F689 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 03DBEACF27F2326F0032F689 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 03DBEAD627F2326F0032F689;
+			remoteInfo = "juke-iOS";
+		};
+		03DBEAF227F232700032F689 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 03DBEACF27F2326F0032F689 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 03DBEAD627F2326F0032F689;
+			remoteInfo = "juke-iOS";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		03DBEAD727F2326F0032F689 /* juke-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "juke-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		03DBEADA27F2326F0032F689 /* juke_iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = juke_iOSApp.swift; sourceTree = "<group>"; };
+		03DBEADC27F2326F0032F689 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		03DBEADE27F232700032F689 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		03DBEAE127F232700032F689 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		03DBEAE727F232700032F689 /* juke-iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "juke-iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		03DBEAEB27F232700032F689 /* juke_iOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = juke_iOSTests.swift; sourceTree = "<group>"; };
+		03DBEAF127F232700032F689 /* juke-iOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "juke-iOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		03DBEAF527F232700032F689 /* juke_iOSUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = juke_iOSUITests.swift; sourceTree = "<group>"; };
+		03DBEAF727F232700032F689 /* juke_iOSUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = juke_iOSUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		03DBEB0427F233E00032F689 /* MusicProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicProfile.swift; sourceTree = "<group>"; };
+		03DBEB0627F2351A0032F689 /* MusicResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicResource.swift; sourceTree = "<group>"; };
+		04A0F0012A8A7F2D00000001 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		04A0F0112A8A7F2D00000001 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		04A0F0212A8A7F2D00000001 /* ProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
+		04A0F0312A8A7F2D00000001 /* CatalogService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogService.swift; sourceTree = "<group>"; };
+		04A0F0412A8A7F2D00000001 /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
+		04A0F0512A8A7F2D00000001 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		04A0F0612A8A7F2D00000001 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
+		04A0F0712A8A7F2D00000001 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
+		04A0F0812A8A7F2D00000001 /* SearchDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDashboardView.swift; sourceTree = "<group>"; };
+		04A0F0B12A8A7F2D00000001 /* JukeDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JukeDesignSystem.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		03DBEAD427F2326F0032F689 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03DBEAE427F232700032F689 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03DBEAEE27F232700032F689 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		03DBEACE27F2326F0032F689 = {
+			isa = PBXGroup;
+			children = (
+				03DBEAD927F2326F0032F689 /* juke-iOS */,
+				03DBEAEA27F232700032F689 /* juke-iOSTests */,
+				03DBEAF427F232700032F689 /* juke-iOSUITests */,
+				03DBEAD827F2326F0032F689 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		03DBEAD827F2326F0032F689 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				03DBEAD727F2326F0032F689 /* juke-iOS.app */,
+				03DBEAE727F232700032F689 /* juke-iOSTests.xctest */,
+				03DBEAF127F232700032F689 /* juke-iOSUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		03DBEAD927F2326F0032F689 /* juke-iOS */ = {
+			isa = PBXGroup;
+			children = (
+				03DBEADA27F2326F0032F689 /* juke_iOSApp.swift */,
+				03DBEADC27F2326F0032F689 /* ContentView.swift */,
+				03DBEADE27F232700032F689 /* Assets.xcassets */,
+				03DBEAE027F232700032F689 /* Preview Content */,
+				03DBEB0427F233E00032F689 /* MusicProfile.swift */,
+				03DBEB0627F2351A0032F689 /* MusicResource.swift */,
+				04A0F0A12A8A7F2D00000001 /* Networking */,
+				04A0F0A22A8A7F2D00000001 /* Services */,
+				04A0F0A32A8A7F2D00000001 /* ViewModels */,
+				04A0F0A42A8A7F2D00000001 /* Views */,
+				04A0F0B22A8A7F2D00000001 /* DesignSystem */,
+			);
+			path = "juke-iOS";
+			sourceTree = "<group>";
+		};
+		04A0F0A12A8A7F2D00000001 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				04A0F0012A8A7F2D00000001 /* APIClient.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		04A0F0A22A8A7F2D00000001 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				04A0F0112A8A7F2D00000001 /* AuthService.swift */,
+				04A0F0212A8A7F2D00000001 /* ProfileService.swift */,
+				04A0F0312A8A7F2D00000001 /* CatalogService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		04A0F0A32A8A7F2D00000001 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				04A0F0412A8A7F2D00000001 /* SessionStore.swift */,
+				04A0F0512A8A7F2D00000001 /* AuthViewModel.swift */,
+				04A0F0612A8A7F2D00000001 /* SearchViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		04A0F0A42A8A7F2D00000001 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				04A0F0712A8A7F2D00000001 /* AuthView.swift */,
+				04A0F0812A8A7F2D00000001 /* SearchDashboardView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		04A0F0B22A8A7F2D00000001 /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				04A0F0B12A8A7F2D00000001 /* JukeDesignSystem.swift */,
+			);
+			path = DesignSystem;
+			sourceTree = "<group>";
+		};
+		03DBEAE027F232700032F689 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				03DBEAE127F232700032F689 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		03DBEAEA27F232700032F689 /* juke-iOSTests */ = {
+			isa = PBXGroup;
+			children = (
+				03DBEAEB27F232700032F689 /* juke_iOSTests.swift */,
+			);
+			path = "juke-iOSTests";
+			sourceTree = "<group>";
+		};
+		03DBEAF427F232700032F689 /* juke-iOSUITests */ = {
+			isa = PBXGroup;
+			children = (
+				03DBEAF527F232700032F689 /* juke_iOSUITests.swift */,
+				03DBEAF727F232700032F689 /* juke_iOSUITestsLaunchTests.swift */,
+			);
+			path = "juke-iOSUITests";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		03DBEAD627F2326F0032F689 /* juke-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 03DBEAFB27F232700032F689 /* Build configuration list for PBXNativeTarget "juke-iOS" */;
+			buildPhases = (
+				03DBEAD327F2326F0032F689 /* Sources */,
+				03DBEAD427F2326F0032F689 /* Frameworks */,
+				03DBEAD527F2326F0032F689 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "juke-iOS";
+			productName = "juke-iOS";
+			productReference = 03DBEAD727F2326F0032F689 /* juke-iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		03DBEAE627F232700032F689 /* juke-iOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 03DBEAFE27F232700032F689 /* Build configuration list for PBXNativeTarget "juke-iOSTests" */;
+			buildPhases = (
+				03DBEAE327F232700032F689 /* Sources */,
+				03DBEAE427F232700032F689 /* Frameworks */,
+				03DBEAE527F232700032F689 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				03DBEAE927F232700032F689 /* PBXTargetDependency */,
+			);
+			name = "juke-iOSTests";
+			productName = "juke-iOSTests";
+			productReference = 03DBEAE727F232700032F689 /* juke-iOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		03DBEAF027F232700032F689 /* juke-iOSUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 03DBEB0127F232700032F689 /* Build configuration list for PBXNativeTarget "juke-iOSUITests" */;
+			buildPhases = (
+				03DBEAED27F232700032F689 /* Sources */,
+				03DBEAEE27F232700032F689 /* Frameworks */,
+				03DBEAEF27F232700032F689 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				03DBEAF327F232700032F689 /* PBXTargetDependency */,
+			);
+			name = "juke-iOSUITests";
+			productName = "juke-iOSUITests";
+			productReference = 03DBEAF127F232700032F689 /* juke-iOSUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		03DBEACF27F2326F0032F689 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1330;
+				LastUpgradeCheck = 1330;
+				TargetAttributes = {
+					03DBEAD627F2326F0032F689 = {
+						CreatedOnToolsVersion = 13.3;
+					};
+					03DBEAE627F232700032F689 = {
+						CreatedOnToolsVersion = 13.3;
+						TestTargetID = 03DBEAD627F2326F0032F689;
+					};
+					03DBEAF027F232700032F689 = {
+						CreatedOnToolsVersion = 13.3;
+						TestTargetID = 03DBEAD627F2326F0032F689;
+					};
+				};
+			};
+			buildConfigurationList = 03DBEAD227F2326F0032F689 /* Build configuration list for PBXProject "juke-iOS" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 03DBEACE27F2326F0032F689;
+			productRefGroup = 03DBEAD827F2326F0032F689 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				03DBEAD627F2326F0032F689 /* juke-iOS */,
+				03DBEAE627F232700032F689 /* juke-iOSTests */,
+				03DBEAF027F232700032F689 /* juke-iOSUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		03DBEAD527F2326F0032F689 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03DBEAE227F232700032F689 /* Preview Assets.xcassets in Resources */,
+				03DBEADF27F232700032F689 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03DBEAE527F232700032F689 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03DBEAEF27F232700032F689 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		03DBEAD327F2326F0032F689 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				04A0F0B32A8A7F2D00000001 /* JukeDesignSystem.swift in Sources */,
+				04A0F0822A8A7F2D00000001 /* SearchDashboardView.swift in Sources */,
+				04A0F0722A8A7F2D00000001 /* AuthView.swift in Sources */,
+				04A0F0622A8A7F2D00000001 /* SearchViewModel.swift in Sources */,
+				04A0F0522A8A7F2D00000001 /* AuthViewModel.swift in Sources */,
+				04A0F0422A8A7F2D00000001 /* SessionStore.swift in Sources */,
+				04A0F0322A8A7F2D00000001 /* CatalogService.swift in Sources */,
+				04A0F0222A8A7F2D00000001 /* ProfileService.swift in Sources */,
+				04A0F0122A8A7F2D00000001 /* AuthService.swift in Sources */,
+				04A0F0022A8A7F2D00000001 /* APIClient.swift in Sources */,
+				03DBEB0527F233E00032F689 /* MusicProfile.swift in Sources */,
+				03DBEADD27F2326F0032F689 /* ContentView.swift in Sources */,
+				03DBEADB27F2326F0032F689 /* juke_iOSApp.swift in Sources */,
+				03DBEB0727F2351A0032F689 /* MusicResource.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03DBEAE327F232700032F689 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03DBEAEC27F232700032F689 /* juke_iOSTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03DBEAED27F232700032F689 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03DBEAF827F232700032F689 /* juke_iOSUITestsLaunchTests.swift in Sources */,
+				03DBEAF627F232700032F689 /* juke_iOSUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		03DBEAE927F232700032F689 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 03DBEAD627F2326F0032F689 /* juke-iOS */;
+			targetProxy = 03DBEAE827F232700032F689 /* PBXContainerItemProxy */;
+		};
+		03DBEAF327F232700032F689 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 03DBEAD627F2326F0032F689 /* juke-iOS */;
+			targetProxy = 03DBEAF227F232700032F689 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		03DBEAF927F232700032F689 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		03DBEAFA27F232700032F689 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		03DBEAFC27F232700032F689 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"juke-iOS/Preview Content\"";
+				DEVELOPMENT_TEAM = 2WMS6785YD;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "embario.juke-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		03DBEAFD27F232700032F689 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"juke-iOS/Preview Content\"";
+				DEVELOPMENT_TEAM = 2WMS6785YD;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "embario.juke-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		03DBEAFF27F232700032F689 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2WMS6785YD;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "embario.juke-iOSTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/juke-iOS.app/juke-iOS";
+			};
+			name = Debug;
+		};
+		03DBEB0027F232700032F689 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2WMS6785YD;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "embario.juke-iOSTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/juke-iOS.app/juke-iOS";
+			};
+			name = Release;
+		};
+		03DBEB0227F232700032F689 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2WMS6785YD;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "embario.juke-iOSUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "juke-iOS";
+			};
+			name = Debug;
+		};
+		03DBEB0327F232700032F689 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2WMS6785YD;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "embario.juke-iOSUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "juke-iOS";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		03DBEAD227F2326F0032F689 /* Build configuration list for PBXProject "juke-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03DBEAF927F232700032F689 /* Debug */,
+				03DBEAFA27F232700032F689 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		03DBEAFB27F232700032F689 /* Build configuration list for PBXNativeTarget "juke-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03DBEAFC27F232700032F689 /* Debug */,
+				03DBEAFD27F232700032F689 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		03DBEAFE27F232700032F689 /* Build configuration list for PBXNativeTarget "juke-iOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03DBEAFF27F232700032F689 /* Debug */,
+				03DBEB0027F232700032F689 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		03DBEB0127F232700032F689 /* Build configuration list for PBXNativeTarget "juke-iOSUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03DBEB0227F232700032F689 /* Debug */,
+				03DBEB0327F232700032F689 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 03DBEACF27F2326F0032F689 /* Project object */;
+}
