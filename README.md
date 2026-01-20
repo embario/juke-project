@@ -5,7 +5,7 @@ Backend services for the Juke Music Service now ship with a React-based analyst 
 ## Running the stack
 
 1. Duplicate `template.env` into `.env` and populate the secrets as needed, including `BACKEND_URL` (defaults to `http://127.0.0.1:8000` for the API) and `FRONTEND_URL` (`http://127.0.0.1:5173`).
-2. Start the local services, including the asynchronous workers and frontend container:
+2. Start the local services, including the asynchronous workers and web container:
 
 	 ```bash
 	 docker-compose up --build
@@ -55,7 +55,7 @@ Backend services for the Juke Music Service now ship with a React-based analyst 
 
 ## Tests
 
-- Backend: `docker-compose exec web python manage.py test`
+- Backend: `docker-compose exec backend python manage.py test`
 - Frontend: `cd web && npm test`
 
 GitHub Actions (see `.github/workflows/ci.yml`) runs linting plus both suites on every push and pull request targeting `main`.

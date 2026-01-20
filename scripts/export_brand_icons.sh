@@ -17,7 +17,7 @@ fi
 run_render() {
   docker compose run --rm \
     -v "$PROJECT_ROOT":/workspace \
-    frontend \
+    web \
     sh -c "set -e; npm install --prefix /tmp/icon-gen sharp@0.33.2 >/tmp/icon-gen.log 2>&1; cd /workspace; NODE_PATH=/tmp/icon-gen/node_modules node $SVG_EXPORT_SCRIPT $IOS_EXPORT_JSON $ANDROID_EXPORT_JSON"
 }
 

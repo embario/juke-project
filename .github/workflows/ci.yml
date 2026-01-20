@@ -20,7 +20,7 @@ jobs:
         run: docker compose -f docker-compose.ci.yml pull
 
       - name: Build backend image
-        run: docker compose -f docker-compose.ci.yml build web
+        run: docker compose -f docker-compose.ci.yml build backend
 
       - name: Start services
         run: docker compose -f docker-compose.ci.yml up -d
@@ -29,16 +29,16 @@ jobs:
         run: docker ps
 
       - name: Lint (flake8)
-        run: docker compose -f docker-compose.ci.yml exec web flake8
+        run: docker compose -f docker-compose.ci.yml exec backend flake8
 
       - name: Check for missing migrations
-        run: docker compose -f docker-compose.ci.yml exec web python manage.py makemigrations --check --no-input
+        run: docker compose -f docker-compose.ci.yml exec backend python manage.py makemigrations --check --no-input
 
       - name: Frontend tests
-        run: docker compose -f docker-compose.ci.yml run --rm frontend npm run test
+        run: docker compose -f docker-compose.ci.yml run --rm web npm run test
 
       - name: Backend tests
-        run: docker compose -f docker-compose.ci.yml exec web python manage.py test
+        run: docker compose -f docker-compose.ci.yml exec backend python manage.py test
 
       - name: Tear down
         if: always()

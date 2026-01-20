@@ -21,7 +21,7 @@ services:
       timeout: 5s
       retries: 10
 
-  web:
+  backend:
     build:
       context: .
     command: bash run_dev.sh
@@ -37,7 +37,7 @@ services:
       redis:
         condition: service_healthy
 
-  frontend:
+  web:
     build:
       context: ./web
       args:
@@ -54,4 +54,4 @@ services:
     ports:
       - "5173:5173"
     depends_on:
-      - web
+      - backend
