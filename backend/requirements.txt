@@ -6,7 +6,7 @@ django-rest-registration
 social-auth-app-django
 markdown
 psycopg2
-flake8
+ruff
 ipython
 ipdb
 spotipy
@@ -15,3 +15,5 @@ django-cors-headers
 celery
 redis
 requests
+gunicorn
+whitenoise

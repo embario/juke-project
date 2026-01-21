@@ -28,8 +28,8 @@ jobs:
       - name: List containers
         run: docker ps
 
-      - name: Lint (flake8)
-        run: docker compose -f docker-compose.ci.yml exec backend flake8
+      - name: Lint (ruff)
+        run: docker compose -f docker-compose.ci.yml exec -T backend ruff check
 
       - name: Check for missing migrations
         run: docker compose -f docker-compose.ci.yml exec backend python manage.py makemigrations --check --no-input

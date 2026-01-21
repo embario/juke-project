@@ -70,9 +70,9 @@ REST_REGISTRATION = {
     'REGISTER_EMAIL_VERIFICATION_ENABLED': True,
     'RESET_PASSWORD_VERIFICATION_ENABLED': True,
 
-    'REGISTER_VERIFICATION_URL': 'https://frontend-host/verify-user/',
-    'RESET_PASSWORD_VERIFICATION_URL': 'https://frontend-host/reset-password/',
-    'REGISTER_EMAIL_VERIFICATION_URL': 'https://frontend-host/verify-email/',
+    'REGISTER_VERIFICATION_URL': os.environ.get('REGISTER_VERIFICATION_URL', 'https://frontend-host/verify-user/'),
+    'RESET_PASSWORD_VERIFICATION_URL': os.environ.get('RESET_PASSWORD_VERIFICATION_URL', 'https://frontend-host/reset-password/'),
+    'REGISTER_EMAIL_VERIFICATION_URL': os.environ.get('REGISTER_EMAIL_VERIFICATION_URL', 'https://frontend-host/verify-email/'),
 
     'VERIFICATION_FROM_EMAIL': os.environ.get("EMAIL_HOST_USER"),
 
@@ -118,10 +118,12 @@ INSTALLED_APPS = [
     'juke_auth',
     'catalog',
     'recommender',
+    'powerhour',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -291,6 +293,7 @@ RECOMMENDER_ENGINE_TIMEOUT = int(os.environ.get('RECOMMENDER_ENGINE_TIMEOUT', '1
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
