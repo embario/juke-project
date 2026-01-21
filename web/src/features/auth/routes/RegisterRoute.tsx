@@ -13,9 +13,13 @@ const RegisterRoute = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const registrationDisabled = ['1', 'true', 'yes', 'on'].includes(
-    __DISABLE_REGISTRATION_EMAILS__.toLowerCase(),
-  );
+  const registrationDisabled = (() => {
+    const value =
+      import.meta.env.DISABLE_REGISTRATION_EMAILS ??
+      window?.ENV?.DISABLE_REGISTRATION_EMAILS ??
+      '';
+    return ['1', 'true', 'yes', 'on'].includes(value.toLowerCase());
+  })();
 
   const handleSubmit = async (payload: RegisterPayload) => {
     if (registrationDisabled) {
