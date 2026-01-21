@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.contrib.auth import login, logout
 
 from django.db.models import Q
@@ -13,6 +14,7 @@ from rest_framework.views import APIView
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_registration.api.views.register import RegisterView
 
 from social_django.utils import load_backend, load_strategy
 
@@ -143,3 +145,13 @@ class SocialAuth(generics.CreateAPIView):
             return Response(user_serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'detail': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class JukeRegisterView(RegisterView):
+    def post(self, request, *args, **kwargs):
+        if getattr(settings, 'DISABLE_REGISTRATION_EMAILS', False):
+            return Response(
+                {'detail': 'Registration is temporarily disabled. Please try again later.'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        return super().post(request, *args, **kwargs)

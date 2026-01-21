@@ -1,6 +1,16 @@
 # Juke Platform
 
-Backend services for the Juke Music Service now live under `backend/`, the React-based analyst console sits in `web/`, and the platform-specific mobile clients live under `mobile/`.
+Juke is a music intelligence platform that unifies catalog ingestion, playback control, and recommendation orchestration behind a single backend. It ships with a React-based analyst console, native mobile clients, and a Power Hour companion app (ShotClock) that builds on the same APIs.
+
+Backend services live under `backend/`, the analyst console sits in `web/`, and platform-specific mobile clients live under `mobile/`.
+
+## What ships here
+
+- **Core API**: Django + DRF, OAuth integrations, playlist/recommendation orchestration, and background jobs.
+- **Recommender engine**: FastAPI service for embedding lookup and similarity ranking.
+- **Analyst console**: React + Vite front end for operators to manage catalog data and run sessions.
+- **Mobile clients**: Native iOS + Android apps (Juke) for end users.
+- **ShotClock (Power Hour)**: iOS app that layers a timed social game on top of Juke playlists.
 
 ## Repository layout
 

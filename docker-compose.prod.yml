@@ -74,11 +74,13 @@ services:
       args:
         BACKEND_URL: ${BACKEND_URL:?Set BACKEND_URL}
         VITE_API_BASE_URL: ${BACKEND_URL:?Set BACKEND_URL}
+        DISABLE_REGISTRATION_EMAILS: ${DISABLE_REGISTRATION_EMAILS:-0}
         JUKE_RUNTIME_ENV: production
     environment:
       - VITE_API_BASE_URL=${BACKEND_URL:?Set BACKEND_URL}
       - JUKE_RUNTIME_ENV=production
       - BACKEND_URL=${BACKEND_URL:?Set BACKEND_URL}
+      - DISABLE_REGISTRATION_EMAILS=${DISABLE_REGISTRATION_EMAILS:-0}
     depends_on:
       - backend
     expose:

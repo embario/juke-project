@@ -48,6 +48,16 @@ The default `docker-compose.yml` wires Django (`backend`), Celery workers/beat, 
    - In Docker: `development` keeps the live Vite dev server, while `staging`/`production` invoke `npm run build:*`, copy the compressed assets, and hand them to NGINX (see `web/docker-entrypoint.sh`).
    - `SPOTIFY_USE_STUB_DATA=1` forces stubbed catalog data; defaults to `True` when running tests.
 
+## Deployment Notes (Compose + Caddy)
+
+- Production stack uses `docker-compose.prod.yml` with Caddy for TLS, Gunicorn for Django, and Nginx for the web app.
+- Caddy terminates HTTPS and reverse-proxies to the `web` container; once DNS points at the VM, certs are auto-issued.
+- `backend/run_prod.sh` runs migrations, `collectstatic`, then Gunicorn.
+- Web build requires `BACKEND_URL` at build time; `docker-compose.prod.yml` passes it into the web image.
+- Nginx inside the web container needs Docker DNS: `resolver 127.0.0.11` in `web/nginx.conf`.
+- Proxy `/static/`, `/media/`, and `/admin/` in `web/nginx.conf` to the backend to avoid Django static assets returning HTML.
+- Registration email flow can be disabled via `DISABLE_REGISTRATION_EMAILS=1` (blocks `/api/v1/auth/accounts/register/` with a 403 and shows a banner on the register UI).
+
 ## Data & Service Flow
 
 1. Clients authenticate via OAuth (Spotify through `juke_auth`) or email-based flows (DRF + rest_registration).

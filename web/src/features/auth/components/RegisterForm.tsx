@@ -7,13 +7,20 @@ import type { RegisterPayload } from '../types';
 type Props = {
   onSubmit: (payload: RegisterPayload) => Promise<void> | void;
   isSubmitting?: boolean;
+  isDisabled?: boolean;
   serverError?: string | null;
   successMessage?: string | null;
 };
 
 type FormErrors = Partial<Record<keyof RegisterPayload, string>>;
 
-const RegisterForm = ({ onSubmit, isSubmitting = false, serverError = null, successMessage = null }: Props) => {
+const RegisterForm = ({
+  onSubmit,
+  isSubmitting = false,
+  isDisabled = false,
+  serverError = null,
+  successMessage = null,
+}: Props) => {
   const [form, setForm] = useState<RegisterPayload>({
     username: '',
     email: '',
@@ -36,6 +43,9 @@ const RegisterForm = ({ onSubmit, isSubmitting = false, serverError = null, succ
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isDisabled) {
+      return;
+    }
     if (!validate()) {
       return;
     }
@@ -53,6 +63,7 @@ const RegisterForm = ({ onSubmit, isSubmitting = false, serverError = null, succ
           placeholder="auditor"
           value={form.username}
           error={errors.username}
+          disabled={isDisabled}
           onChange={(event) => setForm((prev) => ({ ...prev, username: event.target.value }))}
         />
         <InputField
@@ -62,6 +73,7 @@ const RegisterForm = ({ onSubmit, isSubmitting = false, serverError = null, succ
           placeholder="you@juke.fm"
           value={form.email}
           error={errors.email}
+          disabled={isDisabled}
           onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
         />
         <InputField
@@ -71,6 +83,7 @@ const RegisterForm = ({ onSubmit, isSubmitting = false, serverError = null, succ
           placeholder="••••••••"
           value={form.password}
           error={errors.password}
+          disabled={isDisabled}
           onChange={(event) => setForm((prev) => ({ ...prev, password: event.target.value }))}
         />
         <InputField
@@ -80,12 +93,13 @@ const RegisterForm = ({ onSubmit, isSubmitting = false, serverError = null, succ
           placeholder="••••••••"
           value={form.passwordConfirm}
           error={errors.passwordConfirm}
+          disabled={isDisabled}
           onChange={(event) => setForm((prev) => ({ ...prev, passwordConfirm: event.target.value }))}
         />
         <StatusBanner variant="success" message={successMessage} />
         <StatusBanner variant="error" message={serverError} />
-        <Button type="submit" disabled={isSubmitting} data-variant="primary">
-          {isSubmitting ? 'Submitting…' : 'Create account'}
+        <Button type="submit" disabled={isSubmitting || isDisabled} data-variant="primary">
+          {isDisabled ? 'Registration disabled' : isSubmitting ? 'Submitting…' : 'Create account'}
         </Button>
       </div>
     </form>

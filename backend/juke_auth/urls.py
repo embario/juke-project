@@ -9,6 +9,7 @@ router.register(r'music-profiles', views.MusicProfileViewSet)
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
+    path('accounts/register/', views.JukeRegisterView.as_view(), name='juke_register'),
     path('accounts/', include('rest_registration.api.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api-auth-token/', views.TokenLoginView.as_view(), name='api_token_login'),

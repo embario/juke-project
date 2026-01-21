@@ -1,3 +1,4 @@
+from django.test import override_settings
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -92,6 +93,23 @@ class TestRegistration(APITestCase):
         self.assertEqual(len(outbox), 1)
         self.assertEqual("Welcome to Juke! Please verify your Account", outbox[0].subject)
         self.assertIn("Welcome to Juke! Let's get listening.", outbox[0].body)
+
+    @override_settings(DISABLE_REGISTRATION_EMAILS=True)
+    def test_register_disabled(self):
+        data = {
+            'username': 'test',
+            'password': 'testpassword',
+            'password_confirm': 'testpassword',
+            'email': 'test@test.com',
+        }
+
+        response = self.client.post(self.register_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertIn('detail', response.data)
+        self.assertEqual(
+            response.data['detail'],
+            'Registration is temporarily disabled. Please try again later.',
+        )
 
     def test_verify_fail_wrong_data(self):
         from django.core.mail import outbox

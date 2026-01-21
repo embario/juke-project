@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import type { RegisterPayload } from '../types';
 import { ApiError } from '@shared/api/apiClient';
 import { formatFieldErrors } from '@shared/utils/errorFormatters';
+import StatusBanner from '@uikit/components/StatusBanner';
 
 const RegisterRoute = () => {
   const { register } = useAuth();
@@ -12,8 +13,15 @@ const RegisterRoute = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const registrationDisabled = ['1', 'true', 'yes', 'on'].includes(
+    __DISABLE_REGISTRATION_EMAILS__.toLowerCase(),
+  );
 
   const handleSubmit = async (payload: RegisterPayload) => {
+    if (registrationDisabled) {
+      setError('Registration is temporarily disabled. Check back soon.');
+      return;
+    }
     setIsSubmitting(true);
     setError(null);
     setSuccess(null);
@@ -39,10 +47,19 @@ const RegisterRoute = () => {
         <p className="eyebrow">Provision access</p>
         <h2>Create a new catalog operator</h2>
         <p className="muted">Your inbox will receive a verification link instantly.</p>
+        <StatusBanner
+          variant="warning"
+          message={
+            registrationDisabled
+              ? 'Registration is temporarily disabled while email delivery is offline.'
+              : null
+          }
+        />
       </div>
       <RegisterForm
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
+        isDisabled={registrationDisabled}
         serverError={error}
         successMessage={success}
       />
