@@ -65,8 +65,16 @@ class SessionListSerializer(serializers.ModelSerializer):
             'current_track_index', 'created_at', 'started_at', 'ended_at',
             'admin', 'player_count', 'track_count',
         ]
-        read_only_fields = ['id', 'invite_code', 'status', 'current_track_index',
-                           'created_at', 'started_at', 'ended_at', 'admin']
+        read_only_fields = [
+            'id',
+            'invite_code',
+            'status',
+            'current_track_index',
+            'created_at',
+            'started_at',
+            'ended_at',
+            'admin',
+        ]
 
     def get_player_count(self, obj):
         return obj.players.count()

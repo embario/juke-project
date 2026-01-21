@@ -49,6 +49,14 @@ Backend services for the Juke Music Service now live under `backend/`, the React
 - Asset builds honor `JUKE_RUNTIME_ENV` (`development`, `staging`, `production`). Use `npm run build:dev`, `npm run build:staging`, or `npm run build:prod` to emit the correct bundle; the default `npm run build` targets production and now outputs pre-compressed Brotli/Gzip assets ready for staging or production servers.
 - The Dockerized frontend follows the same flag: `development` keeps the Vite dev server live (no bundling), while `staging`/`production` trigger the optimized build and serve the static assets through NGINX (including gzip precompression and `/api` + `/auth` proxying).
 
+## Git hooks
+
+Run the setup script once per clone to enable repo-tracked hooks (includes web lint on commit):
+
+```sh
+scripts/setup-hooks.sh
+```
+
 - Storybook documents the UI kit living under `web/src/uikit`. Launch it with:
 
 	```bash

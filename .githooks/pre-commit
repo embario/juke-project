@@ -1,33 +1,26 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/usr/bin/env sh
+set -eu
 
-SECTION_DIVIDER="----------------------------------------"
-
-service_is_running() {
-	local service="$1"
-	# docker compose ps --quiet prints container IDs when running, so anything means live container.
-	if docker compose ps --status=running --quiet "$service" >/dev/null 2>&1 && \
-		 [ -n "$(docker compose ps --status=running --quiet "$service" 2>/dev/null)" ]; then
-		return 0
-	fi
-	return 1
-}
-
-echo "${SECTION_DIVIDER}"
-echo "Running backend lint (flake8)"
-if service_is_running backend; then
-	docker compose exec -T backend flake8
-else
-	docker compose run --rm backend flake8
+if [ "${SKIP_WEB_LINT:-}" = "1" ]; then
+  echo "pre-commit: skipping web lint (SKIP_WEB_LINT=1)"
+  exit 0
 fi
 
-echo "${SECTION_DIVIDER}"
-echo "Running web lint (npm run lint)"
-if service_is_running web; then
-	docker compose exec -T web sh -c "npm install && npm run lint"
+if [ -f "web/package.json" ]; then
+  echo "pre-commit: running web lint"
+  npm --prefix web run lint
 else
-	docker compose run --rm --entrypoint "" web sh -c "npm install && npm run lint"
+  echo "pre-commit: web/package.json not found; skipping web lint"
 fi
 
-echo "${SECTION_DIVIDER}"
-echo "All linters passed"
+if [ "${SKIP_BACKEND_LINT:-}" = "1" ]; then
+  echo "pre-commit: skipping backend lint (SKIP_BACKEND_LINT=1)"
+  exit 0
+fi
+
+if [ -f "docker-compose.ci.yml" ]; then
+  echo "pre-commit: running backend ruff via docker compose"
+  docker compose -f docker-compose.ci.yml exec -T backend ruff check
+else
+  echo "pre-commit: docker-compose.ci.yml not found; skipping backend lint"
+fi

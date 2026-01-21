@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:15-alpine
+    image: postgres:17-alpine
     env_file: test.env
     environment:
       POSTGRES_DB: ${POSTGRES_NAME:-postgres}
