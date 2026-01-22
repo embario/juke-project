@@ -56,7 +56,7 @@ The default `docker-compose.yml` wires Django (`backend`), Celery workers/beat, 
 - Web build requires `BACKEND_URL` at build time; `docker-compose.prod.yml` passes it into the web image.
 - Nginx inside the web container needs Docker DNS: `resolver 127.0.0.11` in `web/nginx.conf`.
 - Proxy `/static/`, `/media/`, and `/admin/` in `web/nginx.conf` to the backend to avoid Django static assets returning HTML.
-- Registration email flow can be disabled via `DISABLE_REGISTRATION_EMAILS=1` (blocks `/api/v1/auth/accounts/register/` with a 403 and shows a banner on the register UI).
+- Registration email flow can be disabled via `DISABLE_REGISTRATION=1` (blocks `/api/v1/auth/accounts/register/` with a 403 and replaces the register form with a warning banner).
 
 ## Data & Service Flow
 

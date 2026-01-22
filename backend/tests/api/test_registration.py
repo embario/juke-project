@@ -94,7 +94,7 @@ class TestRegistration(APITestCase):
         self.assertEqual("Welcome to Juke! Please verify your Account", outbox[0].subject)
         self.assertIn("Welcome to Juke! Let's get listening.", outbox[0].body)
 
-    @override_settings(DISABLE_REGISTRATION_EMAILS=True)
+    @override_settings(DISABLE_REGISTRATION=True)
     def test_register_disabled(self):
         data = {
             'username': 'test',

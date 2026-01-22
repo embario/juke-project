@@ -15,8 +15,8 @@ const RegisterRoute = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const registrationDisabled = (() => {
     const value =
-      import.meta.env.DISABLE_REGISTRATION_EMAILS ??
-      window?.ENV?.DISABLE_REGISTRATION_EMAILS ??
+      import.meta.env.DISABLE_REGISTRATION ??
+      window?.ENV?.DISABLE_REGISTRATION ??
       '';
     return ['1', 'true', 'yes', 'on'].includes(value.toLowerCase());
   })();
@@ -51,22 +51,25 @@ const RegisterRoute = () => {
         <p className="eyebrow">Provision access</p>
         <h2>Create a new catalog operator</h2>
         <p className="muted">Your inbox will receive a verification link instantly.</p>
-        <StatusBanner
-          variant="warning"
-          message={
-            registrationDisabled
-              ? 'Registration is temporarily disabled while email delivery is offline.'
-              : null
-          }
-        />
       </div>
-      <RegisterForm
-        onSubmit={handleSubmit}
-        isSubmitting={isSubmitting}
-        isDisabled={registrationDisabled}
-        serverError={error}
-        successMessage={success}
-      />
+      {registrationDisabled ? (
+        <div className="card">
+          <div className="card__body">
+            <StatusBanner
+              variant="warning"
+              message="Registration is temporarily disabled while email delivery is offline."
+            />
+          </div>
+        </div>
+      ) : (
+        <RegisterForm
+          onSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+          isDisabled={registrationDisabled}
+          serverError={error}
+          successMessage={success}
+        />
+      )}
     </section>
   );
 };

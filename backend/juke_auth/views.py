@@ -149,7 +149,7 @@ class SocialAuth(generics.CreateAPIView):
 
 class JukeRegisterView(RegisterView):
     def post(self, request, *args, **kwargs):
-        if getattr(settings, 'DISABLE_REGISTRATION_EMAILS', False):
+        if getattr(settings, 'DISABLE_REGISTRATION', False):
             return Response(
                 {'detail': 'Registration is temporarily disabled. Please try again later.'},
                 status=status.HTTP_403_FORBIDDEN,
