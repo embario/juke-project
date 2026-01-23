@@ -5,7 +5,10 @@ exclude = [
   ".git",
   "__pycache__",
 ]
+
+[tool.ruff.lint]
 select = ["E", "F", "W"]
+
 
 [tool.ruff.format]
 line-ending = "lf"
