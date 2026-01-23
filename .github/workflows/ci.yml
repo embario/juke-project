@@ -16,6 +16,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Prepare env file
+        run: |
+          cp template.env .env
+          echo "SOCIAL_AUTH_SPOTIFY_KEY=${SOCIAL_AUTH_SPOTIFY_KEY}" >> .env
+          echo "SOCIAL_AUTH_SPOTIFY_SECRET=${SOCIAL_AUTH_SPOTIFY_SECRET}" >> .env
+
       - name: Pull application images
         run: docker compose -f docker-compose.ci.yml pull
 

@@ -17,7 +17,7 @@ Backend services live under `backend/`, the analyst console sits in `web/`, and 
 - `backend/`: Django API, Celery workers/beat, recommender engine, infrastructure Dockerfiles, and backend-specific configuration such as `setup.cfg` and `genres.txt`.
 - `web/`: Vite + React frontend for analysts.
 - `mobile/`: Native clients (`mobile/android/juke`, `mobile/ios/juke`).
-- `template.env`, `.env`, and `test.env`: stay at the repository root so both Docker Compose files can source them regardless of where services run.
+- `template.env` and `.env`: stay at the repository root so both Docker Compose files can source them regardless of where services run.
 - `backend/static/` (cover art + other media) and `scripts/`: shared assets that remain addressable from the repository root.
 
 ## Running the stack

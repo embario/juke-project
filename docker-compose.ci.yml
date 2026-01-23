@@ -3,7 +3,6 @@ services:
     image: postgres:17-alpine
     env_file:
       - .env
-      - test.env
     environment:
       POSTGRES_DB: ${POSTGRES_NAME:-postgres}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -30,7 +29,6 @@ services:
     working_dir: /app
     env_file:
       - .env
-      - test.env
     environment:
       DJANGO_SETTINGS_MODULE: settings.base
     volumes:
@@ -51,7 +49,6 @@ services:
     command: npm run dev -- --host 0.0.0.0 --port ${WEB_PORT:?Set WEB_PORT}
     env_file:
       - .env
-      - test.env
     environment:
       VITE_API_BASE_URL: ${BACKEND_URL:?Set BACKEND_URL}
       WEB_PORT: ${WEB_PORT:?Set WEB_PORT}
