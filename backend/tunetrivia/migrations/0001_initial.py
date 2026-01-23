@@ -25,7 +25,14 @@ class Migration(migrations.Migration):
                 ('total_correct_songs', models.IntegerField(default=0)),
                 ('total_correct_artists', models.IntegerField(default=0)),
                 ('last_played_at', models.DateTimeField(auto_now=True)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='tunetrivia_leaderboard', to=settings.AUTH_USER_MODEL)),
+                (
+                    'user',
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='tunetrivia_leaderboard',
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
                 'ordering': ['-total_score'],
@@ -37,8 +44,27 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100)),
                 ('code', models.CharField(default=tunetrivia.models.generate_session_code, max_length=6, unique=True)),
-                ('mode', models.CharField(choices=[('host', 'Host Mode'), ('party', 'Party Mode')], default='party', max_length=10)),
-                ('status', models.CharField(choices=[('lobby', 'Lobby'), ('playing', 'Playing'), ('paused', 'Paused'), ('finished', 'Finished')], default='lobby', max_length=10)),
+                (
+                    'mode',
+                    models.CharField(
+                        choices=[('host', 'Host Mode'), ('party', 'Party Mode')],
+                        default='party',
+                        max_length=10,
+                    ),
+                ),
+                (
+                    'status',
+                    models.CharField(
+                        choices=[
+                            ('lobby', 'Lobby'),
+                            ('playing', 'Playing'),
+                            ('paused', 'Paused'),
+                            ('finished', 'Finished'),
+                        ],
+                        default='lobby',
+                        max_length=10,
+                    ),
+                ),
                 ('max_songs', models.PositiveIntegerField(default=10)),
                 ('seconds_per_song', models.PositiveIntegerField(default=30)),
                 ('enable_trivia', models.BooleanField(default=True)),
@@ -48,7 +74,14 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('started_at', models.DateTimeField(blank=True, null=True)),
                 ('finished_at', models.DateTimeField(blank=True, null=True)),
-                ('host', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='hosted_tunetrivia_sessions', to=settings.AUTH_USER_MODEL)),
+                (
+                    'host',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='hosted_tunetrivia_sessions',
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
                 'ordering': ['-created_at'],
@@ -59,7 +92,19 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('round_number', models.PositiveIntegerField()),
-                ('status', models.CharField(choices=[('pending', 'Pending'), ('playing', 'Playing'), ('revealed', 'Revealed'), ('finished', 'Finished')], default='pending', max_length=10)),
+                (
+                    'status',
+                    models.CharField(
+                        choices=[
+                            ('pending', 'Pending'),
+                            ('playing', 'Playing'),
+                            ('revealed', 'Revealed'),
+                            ('finished', 'Finished'),
+                        ],
+                        default='pending',
+                        max_length=10,
+                    ),
+                ),
                 ('spotify_track_id', models.CharField(max_length=100)),
                 ('track_name', models.CharField(max_length=300)),
                 ('artist_name', models.CharField(max_length=300)),
@@ -69,7 +114,14 @@ class Migration(migrations.Migration):
                 ('trivia', models.TextField(blank=True, null=True)),
                 ('started_at', models.DateTimeField(blank=True, null=True)),
                 ('revealed_at', models.DateTimeField(blank=True, null=True)),
-                ('session', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='rounds', to='tunetrivia.tunetriviasession')),
+                (
+                    'session',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='rounds',
+                        to='tunetrivia.tunetriviasession',
+                    ),
+                ),
             ],
             options={
                 'ordering': ['round_number'],
@@ -84,8 +136,24 @@ class Migration(migrations.Migration):
                 ('is_host', models.BooleanField(default=False)),
                 ('total_score', models.IntegerField(default=0)),
                 ('joined_at', models.DateTimeField(auto_now_add=True)),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='tunetrivia_participations', to=settings.AUTH_USER_MODEL)),
-                ('session', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='players', to='tunetrivia.tunetriviasession')),
+                (
+                    'user',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='tunetrivia_participations',
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    'session',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='players',
+                        to='tunetrivia.tunetriviasession',
+                    ),
+                ),
             ],
             options={
                 'ordering': ['-total_score', 'joined_at'],
@@ -102,8 +170,22 @@ class Migration(migrations.Migration):
                 ('artist_correct', models.BooleanField(default=False)),
                 ('points_earned', models.IntegerField(default=0)),
                 ('submitted_at', models.DateTimeField(auto_now_add=True)),
-                ('player', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='guesses', to='tunetrivia.tunetriviaplayer')),
-                ('round', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='guesses', to='tunetrivia.tunetriviaround')),
+                (
+                    'player',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='guesses',
+                        to='tunetrivia.tunetriviaplayer',
+                    ),
+                ),
+                (
+                    'round',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='guesses',
+                        to='tunetrivia.tunetriviaround',
+                    ),
+                ),
             ],
             options={
                 'unique_together': {('round', 'player')},

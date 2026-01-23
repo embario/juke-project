@@ -1,7 +1,6 @@
 """
 TuneTrivia services for track selection and trivia generation.
 """
-import os
 import random
 from typing import Optional
 
