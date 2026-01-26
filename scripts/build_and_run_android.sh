@@ -11,7 +11,7 @@ API_LEVEL="36"
 SYSTEM_IMAGE="system-images;android-${API_LEVEL};google_apis;arm64-v8a"
 AVD_NAME="jukeApi${API_LEVEL}"
 DEVICE_PROFILE="pixel_7"
-APP_ID="fm.juke.mobile"
+APP_ID=""
 LOG_DIR="${REPO_ROOT}/.android-emulator"
 
 usage() {
@@ -81,6 +81,22 @@ if [[ ! -d "${ANDROID_APP_DIR}" ]]; then
     exit 1
 fi
 
+resolve_app_id() {
+    local gradle_file="${ANDROID_APP_DIR}/app/build.gradle.kts"
+    if [[ ! -f "${gradle_file}" ]]; then
+        echo "Cannot find ${gradle_file} to resolve applicationId." >&2
+        exit 1
+    fi
+    APP_ID=$(grep -m1 'applicationId' "${gradle_file}" | sed 's/.*"\(.*\)".*/\1/')
+    if [[ -z "${APP_ID}" ]]; then
+        echo "Could not parse applicationId from ${gradle_file}." >&2
+        exit 1
+    fi
+    echo "Resolved applicationId: ${APP_ID}"
+}
+
+resolve_app_id
+
 run_with_auto_yes() {
     set +o pipefail
     yes | "$@"
@@ -143,8 +159,14 @@ start_emulator() {
 }
 
 build_and_install() {
+    # The Android emulator's loopback (127.0.0.1) is isolated from the host.
+    # Rewrite to 10.0.2.2 so the app can reach the host backend.
+    local emu_backend_url="${BACKEND_URL:-}"
+    emu_backend_url="${emu_backend_url//127.0.0.1/10.0.2.2}"
+    emu_backend_url="${emu_backend_url//localhost/10.0.2.2}"
+
     pushd "${ANDROID_APP_DIR}" >/dev/null
-    BACKEND_URL="${BACKEND_URL:-}" DISABLE_REGISTRATION="${DISABLE_REGISTRATION:-}" \
+    BACKEND_URL="${emu_backend_url}" DISABLE_REGISTRATION="${DISABLE_REGISTRATION:-}" \
         ./gradlew :app:installDebug
     popd >/dev/null
 }
