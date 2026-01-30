@@ -26,10 +26,10 @@ class TestSpotify(APITestCase):
             'Service cannot satisfy request because it is not available through the Streaming Platform API.'
         )
 
-    def test_list_genres_internal_not_authenticated(self):
+    def test_list_genres_internal_not_authenticated_returns_unauthorized(self):
         self.client.logout()
         resp = self.client.get(self.genre_url, data={'q': 'test'}, format='json')
-        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(resp.data['detail'], "Authentication credentials were not provided.")
 
     def test_list_genres_internal_ok(self):
@@ -38,10 +38,10 @@ class TestSpotify(APITestCase):
         self.assertEqual(resp.data['count'], 1)
         self.assertEqual(resp.data['results'][0]['name'], 'test-genre')
 
-    def test_search_artists_not_authenticated(self):
+    def test_search_artists_not_authenticated_returns_unauthorized(self):
         self.client.logout()
         resp = self.client.get(self.artist_url, data={'external': True}, format='json')
-        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(resp.data['detail'], "Authentication credentials were not provided.")
 
     def test_search_artists_missing_search_param(self):

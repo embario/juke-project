@@ -78,6 +78,6 @@ class MusicProfileTests(APITestCase):
         self.assertEqual(len(response.data['results']), 1)
         self.assertEqual(response.data['results'][0]['username'], self.owner.username)
 
-    def test_search_requires_authentication(self):
+    def test_search_requires_authentication_returns_unauthorized(self):
         response = self.client.get(f'{self.base_url}search/', {'q': 'orb'}, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

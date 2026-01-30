@@ -4,6 +4,9 @@ from django.conf import settings
 from django.contrib.auth import login, logout
 from django.http import HttpResponseRedirect, JsonResponse
 from django.db.models import Q
+from django.utils import timezone
+from django.contrib.sessions.models import Session
+from django.contrib.sessions.backends.db import SessionStore
 from django.shortcuts import get_object_or_404
 from django.utils.module_loading import import_string
 
@@ -124,10 +127,35 @@ class MusicProfileViewSet(viewsets.ModelViewSet):
         return self.queryset
 
     def list(self, request, *args, **kwargs):
-        return Response(
-            {'detail': 'Music profiles cannot be listed. Use the search endpoint instead.'},
-            status=status.HTTP_405_METHOD_NOT_ALLOWED,
-        )
+        if request.query_params.get('online') not in {'1', 'true', 'True', 'yes'}:
+            return Response(
+                {'detail': 'Music profiles cannot be listed. Use the search endpoint instead.'},
+                status=status.HTTP_405_METHOD_NOT_ALLOWED,
+            )
+
+        sessions = Session.objects.filter(expire_date__gte=timezone.now()).only('session_key', 'session_data')
+        user_ids = set()
+        for session in sessions.iterator():
+            try:
+                data = SessionStore(session_key=session.session_key).decode(session.session_data)
+            except Exception:
+                continue
+            user_id = data.get('_auth_user_id')
+            if user_id is None:
+                continue
+            try:
+                user_ids.add(int(user_id))
+            except (TypeError, ValueError):
+                continue
+
+        queryset = self.get_queryset().filter(user_id__in=user_ids).order_by('user__username')
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def get_object(self):
         username = self.kwargs.get(self.lookup_url_kwarg or self.lookup_field)

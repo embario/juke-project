@@ -72,7 +72,7 @@ class GlobePointSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MusicProfile
-        fields = ['id', 'username', 'lat', 'lng', 'clout', 'top_genre', 'display_name']
+        fields = ['id', 'username', 'lat', 'lng', 'clout', 'top_genre', 'display_name', 'location']
 
     def get_top_genre(self, obj):
         genres = obj.favorite_genres

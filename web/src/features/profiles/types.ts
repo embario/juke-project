@@ -11,6 +11,10 @@ export type MusicProfile = {
   favorite_artists: string[];
   favorite_albums: string[];
   favorite_tracks: string[];
+  city_lat?: number | null;
+  city_lng?: number | null;
+  clout?: number | null;
+  top_genre?: string | null;
   created_at: string;
   modified_at: string;
   is_owner: boolean;

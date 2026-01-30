@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback, useState, type MutableRefObject } from 'react';
+import { useRef, useEffect, useCallback, useMemo, useState, type MutableRefObject } from 'react';
 import type { GlobeMethods } from 'react-globe.gl';
 import * as THREE from 'three';
 import { GlobePoint } from '../types';
@@ -25,6 +25,8 @@ type Props = {
   onPointClick?: (point: GlobePoint) => void;
   onCameraChange?: (pov: { lat: number; lng: number; altitude: number }) => void;
   onGlobeReady?: () => void;
+  onHexClick?: (hex: object) => void;
+  onHexHover?: (hex: object | null) => void;
 };
 
 export default function JukeGlobe({
@@ -32,16 +34,22 @@ export default function JukeGlobe({
   width,
   height,
   globeRef: externalRef,
-  onPointClick,
   onCameraChange,
   onGlobeReady,
+  onHexClick,
+  onHexHover,
 }: Props) {
   const internalRef = useRef<GlobeMethods | null>(null);
   const globeRef = externalRef ?? internalRef;
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const throttleRef = useRef<{ last: number; timeout: ReturnType<typeof setTimeout> | null }>({
+    last: 0,
+    timeout: null,
+  });
+  const [hoverCenter, setHoverCenter] = useState<{ lat: number; lng: number } | null>(null);
+  const hoverMeshRef = useRef<THREE.Mesh | null>(null);
   const [countries, setCountries] = useState<CountryFeature[]>([]);
   const [webglSupported, setWebglSupported] = useState(true);
-  const [GlobeComponent, setGlobeComponent] = useState<React.ComponentType<any> | null>(null);
+  const [GlobeComponent, setGlobeComponent] = useState<React.ComponentType<Record<string, unknown>> | null>(null);
 
   useEffect(() => {
     const handleError = (event: ErrorEvent) => {
@@ -69,15 +77,14 @@ export default function JukeGlobe({
 
     const checkWebglAndLoad = async () => {
       try {
-        const canvas = document.createElement('canvas');
-        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        const testCanvas = document.createElement('canvas');
+        const gl = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
         const supported = !!gl;
         setWebglSupported(supported);
         if (!supported) return;
 
         try {
-          const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-          renderer.getContext();
+          const renderer = new THREE.WebGLRenderer({ antialias: true });
           renderer.dispose();
         } catch {
           setWebglSupported(false);
@@ -98,6 +105,187 @@ export default function JukeGlobe({
       cancelled = true;
     };
   }, []);
+
+  // Load country boundaries for vector polygon overlay
+  useEffect(() => {
+    if (!webglSupported || !GlobeComponent) return;
+    fetch(COUNTRIES_URL)
+      .then((res) => res.json())
+      .then((topoData) => {
+        // Convert TopoJSON to GeoJSON features
+        // world-atlas provides TopoJSON; we need to extract features
+        if (topoData.objects && topoData.objects.countries) {
+          // Use topojson-client-like extraction
+          const geometries = topoData.objects.countries.geometries;
+          const features = geometries.map((geom: { type: string; arcs: number[][]; properties?: { name?: string } }) => {
+            // Simple TopoJSON arc resolution
+            return topoJsonFeature(topoData, geom);
+          }).filter(Boolean);
+          setCountries(features);
+        } else if (topoData.features) {
+          // Already GeoJSON
+          setCountries(topoData.features);
+        }
+      })
+      .catch(() => {
+        // Silently fail — globe works without polygons
+      });
+  }, [webglSupported, GlobeComponent]);
+
+  useEffect(() => {
+    if (!webglSupported || !GlobeComponent) return;
+    const globe = globeRef.current;
+    if (!globe) return;
+    const controls = globe.controls();
+    controls.autoRotate = false;
+    controls.autoRotateSpeed = 0.0;
+    controls.enableZoom = true;
+    controls.enableRotate = true;
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.mouseButtons = {
+      LEFT: THREE.MOUSE.ROTATE,
+      MIDDLE: THREE.MOUSE.DOLLY,
+      RIGHT: THREE.MOUSE.ROTATE,
+    };
+    controls.touches = {
+      ONE: THREE.TOUCH.ROTATE,
+      TWO: THREE.TOUCH.DOLLY,
+    };
+    controls.enablePan = false;
+    globe.pointOfView({ lat: 20, lng: 0, altitude: 2.5 });
+  }, [globeRef, webglSupported, GlobeComponent]);
+
+  // Debounced camera change handler for LOD
+  useEffect(() => {
+    if (!webglSupported || !GlobeComponent) return;
+    const globe = globeRef.current;
+    if (!globe || !onCameraChange) return;
+
+    const controls = globe.controls();
+    const handler = () => {
+      const now = Date.now();
+      const emit = () => {
+        const pov = globe.pointOfView();
+        onCameraChange(pov);
+        throttleRef.current.last = Date.now();
+        throttleRef.current.timeout = null;
+      };
+
+      const elapsed = now - throttleRef.current.last;
+      if (elapsed >= 400) {
+        if (throttleRef.current.timeout) {
+          clearTimeout(throttleRef.current.timeout);
+          throttleRef.current.timeout = null;
+        }
+        emit();
+      } else if (!throttleRef.current.timeout) {
+        throttleRef.current.timeout = setTimeout(emit, 400 - elapsed);
+      }
+    };
+
+    controls.addEventListener('change', handler);
+    const cleanupRef = throttleRef;
+    return () => {
+      controls.removeEventListener('change', handler);
+      if (cleanupRef.current.timeout) {
+        clearTimeout(cleanupRef.current.timeout);
+        cleanupRef.current.timeout = null;
+      }
+    };
+  }, [globeRef, onCameraChange, webglSupported, GlobeComponent]);
+
+  const hexAltitude = useCallback((d: { sumWeight?: number }) => {
+    const scaled = Math.min(0.05, 0.008 + (d.sumWeight ?? 0) * 0.012);
+    return scaled;
+  }, []);
+
+  const hexTopColor = useCallback((d: { sumWeight?: number; points?: object[] }) => {
+    const dominant = getDominantGenre(d.points);
+    if (dominant) {
+      return brightenColor(getGenreColor(dominant), 60);
+    }
+    const intensity = Math.min(1, (d.sumWeight ?? 0) / 2.5);
+    const base = [20, 180, 255];
+    const boost = Math.round(120 * intensity);
+    return `rgb(${Math.min(255, base[0] + boost)}, ${Math.min(255, base[1] + boost)}, ${Math.min(255, base[2] + boost)})`;
+  }, []);
+
+  const hexSideColor = useCallback((d: { sumWeight?: number; points?: object[] }) => {
+    const dominant = getDominantGenre(d.points);
+    if (dominant) {
+      const color = brightenColor(getGenreColor(dominant), 40);
+      return `${color}55`;
+    }
+    const intensity = Math.min(1, (d.sumWeight ?? 0) / 2.5);
+    return `rgba(0, 120, 200, ${0.22 + intensity * 0.35})`;
+  }, []);
+
+  const hexLabel = useCallback((d: { points?: object[]; sumWeight?: number }) => {
+    const count = d.points?.length ?? 0;
+    const dominant = getDominantGenre(d.points);
+    const genreLabel = dominant ? dominant : 'mixed';
+    return `
+      <div style="
+        background: rgba(0,0,0,0.85);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 6px;
+        padding: 8px 10px;
+        color: #fff;
+        font-size: 12px;
+        font-family: system-ui, sans-serif;
+        min-width: 140px;
+      ">
+        <div style="font-weight: 600; margin-bottom: 2px;">${count} users</div>
+        <div style="color: rgba(255,255,255,0.6); text-transform: capitalize;">${genreLabel}</div>
+      </div>
+    `;
+  }, []);
+
+  useEffect(() => {
+    let rafId = 0;
+    const start = performance.now();
+    const animate = (time: number) => {
+      const mesh = hoverMeshRef.current;
+      if (mesh) {
+        const pov = globeRef.current?.pointOfView();
+        const altitude = pov?.altitude ?? 1.0;
+        const baseScale = Math.min(5.5, Math.max(1.2, altitude * 1.6));
+        const t = (time - start) / 1000;
+        const pulseScale = 1 + Math.sin(t * 3.5) * 0.35;
+        const scale = baseScale * pulseScale;
+        mesh.scale.set(scale, scale, scale);
+        const material = mesh.material as THREE.MeshBasicMaterial;
+        material.opacity = 0.55 + Math.sin(t * 3.5) * 0.25 + 0.2;
+      }
+      rafId = requestAnimationFrame(animate);
+    };
+    rafId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafId);
+  }, [globeRef]);
+
+  const hoverRingObject = useMemo(() => {
+    const geometry = new THREE.RingGeometry(0.6, 0.8, 64);
+    const material = new THREE.MeshBasicMaterial({
+      color: '#2CFF4E',
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.95,
+    });
+    const mesh = new THREE.Mesh(geometry, material);
+    hoverMeshRef.current = mesh;
+    return mesh;
+  }, []);
+
+  const hoverRingData = hoverCenter
+    ? [{ lat: hoverCenter.lat, lng: hoverCenter.lng }]
+    : [];
+
+  // Polygon accessors for country boundaries
+  const polygonCapColor = useCallback(() => 'rgba(30, 40, 60, 0.4)', []);
+  const polygonSideColor = useCallback(() => 'rgba(20, 30, 50, 0.2)', []);
+  const polygonStrokeColor = useCallback(() => 'rgba(100, 180, 255, 0.15)', []);
+  const polygonAltitude = useCallback(() => 0.005, []);
 
   if (!webglSupported || !GlobeComponent) {
     return (
@@ -125,144 +313,6 @@ export default function JukeGlobe({
     );
   }
 
-  // Load country boundaries for vector polygon overlay
-  useEffect(() => {
-    fetch(COUNTRIES_URL)
-      .then((res) => res.json())
-      .then((topoData) => {
-        // Convert TopoJSON to GeoJSON features
-        // world-atlas provides TopoJSON; we need to extract features
-        if (topoData.objects && topoData.objects.countries) {
-          // Use topojson-client-like extraction
-          const geometries = topoData.objects.countries.geometries;
-          const features = geometries.map((geom: { type: string; arcs: number[][]; properties?: { name?: string } }) => {
-            // Simple TopoJSON arc resolution
-            return topoJsonFeature(topoData, geom);
-          }).filter(Boolean);
-          setCountries(features);
-        } else if (topoData.features) {
-          // Already GeoJSON
-          setCountries(topoData.features);
-        }
-      })
-      .catch(() => {
-        // Silently fail — globe works without polygons
-      });
-  }, []);
-
-  useEffect(() => {
-    const globe = globeRef.current;
-    if (!globe) return;
-    const controls = globe.controls();
-    controls.autoRotate = false;
-    controls.autoRotateSpeed = 0.0;
-    controls.enableZoom = true;
-    controls.enableRotate = true;
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.08;
-    controls.mouseButtons = {
-      LEFT: THREE.MOUSE.ROTATE,
-      MIDDLE: THREE.MOUSE.DOLLY,
-      RIGHT: THREE.MOUSE.ROTATE,
-    };
-    controls.touches = {
-      ONE: THREE.TOUCH.ROTATE,
-      TWO: THREE.TOUCH.DOLLY,
-    };
-    controls.enablePan = false;
-    globe.pointOfView({ lat: 20, lng: 0, altitude: 2.5 });
-  }, [globeRef]);
-
-  // Debounced camera change handler for LOD
-  useEffect(() => {
-    const globe = globeRef.current;
-    if (!globe || !onCameraChange) return;
-
-    const controls = globe.controls();
-    const handler = () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => {
-        const pov = globe.pointOfView();
-        onCameraChange(pov);
-      }, 300);
-    };
-
-    controls.addEventListener('change', handler);
-    return () => {
-      controls.removeEventListener('change', handler);
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [globeRef, onCameraChange]);
-
-  const handlePointClick = useCallback(
-    (point: object) => {
-      if (onPointClick) onPointClick(point as GlobePoint);
-    },
-    [onPointClick],
-  );
-
-  const pointAltitude = useCallback((d: object) => {
-    const p = d as GlobePoint;
-    return Math.pow(p.clout, 2) * 0.4;
-  }, []);
-
-  const pointRadius = useCallback((d: object) => {
-    const p = d as GlobePoint;
-    return Math.pow(p.clout, 1.5) * 0.45 + 0.05;
-  }, []);
-
-  const pointColor = useCallback((d: object) => {
-    const p = d as GlobePoint;
-    return getGenreColor(p.top_genre);
-  }, []);
-
-  const pointLabel = useCallback((d: object) => {
-    const p = d as GlobePoint;
-    return `
-      <div style="
-        background: rgba(0,0,0,0.85);
-        border: 1px solid ${getGenreColor(p.top_genre)};
-        border-radius: 6px;
-        padding: 8px 12px;
-        font-family: system-ui, sans-serif;
-        color: #fff;
-        font-size: 13px;
-        min-width: 140px;
-        max-width: 220px;
-        box-sizing: border-box;
-        line-height: 1.25;
-        word-break: break-word;
-        white-space: normal;
-      ">
-        <div style="font-weight: 600; margin-bottom: 4px;">${p.display_name}</div>
-        <div style="color: #aaa; font-size: 11px;">@${p.username}</div>
-        <div style="margin-top: 6px; display: flex; align-items: center; gap: 6px;">
-          <div style="
-            width: 60px; height: 6px; background: #333; border-radius: 3px; overflow: hidden;
-          ">
-            <div style="
-              width: ${p.clout * 100}%; height: 100%;
-              background: ${getGenreColor(p.top_genre)};
-              border-radius: 3px;
-            "></div>
-          </div>
-          <span style="color: ${getGenreColor(p.top_genre)}; font-weight: 600; font-size: 11px;">
-            ${Math.round(p.clout * 100)}%
-          </span>
-        </div>
-        <div style="margin-top: 4px; color: ${getGenreColor(p.top_genre)}; font-size: 11px; text-transform: capitalize;">
-          ${p.top_genre}
-        </div>
-      </div>
-    `;
-  }, []);
-
-  // Polygon accessors for country boundaries
-  const polygonCapColor = useCallback(() => 'rgba(30, 40, 60, 0.4)', []);
-  const polygonSideColor = useCallback(() => 'rgba(20, 30, 50, 0.2)', []);
-  const polygonStrokeColor = useCallback(() => 'rgba(100, 180, 255, 0.15)', []);
-  const polygonAltitude = useCallback(() => 0.005, []);
-
   return (
     <GlobeComponent
       ref={globeRef}
@@ -279,18 +329,57 @@ export default function JukeGlobe({
       polygonSideColor={polygonSideColor}
       polygonStrokeColor={polygonStrokeColor}
       polygonAltitude={polygonAltitude}
-      // Point layer
-      pointsData={points}
-      pointLat="lat"
-      pointLng="lng"
-      pointAltitude={pointAltitude}
-      pointRadius={pointRadius}
-      pointColor={pointColor}
-      pointLabel={pointLabel}
-      onPointClick={handlePointClick}
-      pointResolution={8}
-      pointsMerge={false}
-      pointsTransitionDuration={800}
+      // Hex bin density layer
+      hexBinPointsData={points}
+      hexBinPointLat="lat"
+      hexBinPointLng="lng"
+      hexBinPointWeight={(d: object) => (d as GlobePoint).clout ?? 0.1}
+      hexBinResolution={3}
+      hexMargin={0.15}
+      hexTopColor={hexTopColor}
+      hexSideColor={hexSideColor}
+      hexAltitude={hexAltitude}
+      hexBinMerge={false}
+      hexTransitionDuration={350}
+      hexLabel={hexLabel}
+      onHexClick={(hex) => {
+        if (onHexClick) onHexClick(hex);
+      }}
+      onHexHover={(hex) => {
+        if (!hex) {
+          setHoverCenter(null);
+        } else {
+          const hexData = hex as { lat?: number; lng?: number; points?: object[] };
+          if (typeof hexData.lat === 'number' && typeof hexData.lng === 'number') {
+            setHoverCenter({ lat: hexData.lat, lng: hexData.lng });
+          } else if (hexData.points && hexData.points.length > 0) {
+            const sum = hexData.points.reduce(
+              (acc, point) => {
+                const p = point as GlobePoint;
+                acc.lat += p.lat;
+                acc.lng += p.lng;
+                return acc;
+              },
+              { lat: 0, lng: 0 },
+            );
+            setHoverCenter({ lat: sum.lat / hexData.points.length, lng: sum.lng / hexData.points.length });
+          } else {
+            setHoverCenter(null);
+          }
+        }
+        if (onHexHover) onHexHover(hex);
+      }}
+      enablePointerInteraction={true}
+      // Hover ring (single mesh)
+      objectsData={hoverRingData}
+      objectLat="lat"
+      objectLng="lng"
+      objectAltitude={() => 0.02}
+      objectFacesSurfaces={() => true}
+      objectThreeObject={hoverRingObject}
+      objectThreeObjectUpdate={(obj, data) => {
+        obj.visible = Boolean(data);
+      }}
       onGlobeReady={onGlobeReady}
     />
   );
@@ -365,4 +454,34 @@ function topoJsonFeature(
   } catch {
     return null;
   }
+}
+
+function getDominantGenre(points?: object[]): string | null {
+  if (!points || points.length === 0) {
+    return null;
+  }
+  const counts: Record<string, number> = {};
+  points.forEach((point) => {
+    const genre = (point as GlobePoint).top_genre ?? 'other';
+    counts[genre] = (counts[genre] ?? 0) + 1;
+  });
+  let top: string | null = null;
+  let max = 0;
+  Object.entries(counts).forEach(([genre, count]) => {
+    if (count > max) {
+      max = count;
+      top = genre;
+    }
+  });
+  return top;
+}
+
+function brightenColor(hex: string, amount: number): string {
+  if (!hex.startsWith('#') || hex.length !== 7) {
+    return hex;
+  }
+  const r = Math.min(255, parseInt(hex.slice(1, 3), 16) + amount);
+  const g = Math.min(255, parseInt(hex.slice(3, 5), 16) + amount);
+  const b = Math.min(255, parseInt(hex.slice(5, 7), 16) + amount);
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 }
