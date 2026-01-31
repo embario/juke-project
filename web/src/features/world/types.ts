@@ -6,6 +6,7 @@ export type GlobePoint = {
   clout: number;
   top_genre: string;
   display_name: string;
+  location?: string | null;
 };
 
 export type UserDetail = {

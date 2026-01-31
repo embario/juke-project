@@ -57,10 +57,10 @@ class PlaybackAPITests(APITestCase):
             },
         }
 
-    def test_requires_authentication(self):
+    def test_requires_authentication_returns_unauthorized(self):
         self.client.logout()
         response = self.client.post(f'{self.playback_url}play/', data={'track_uri': 'spotify:track:123'})
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_missing_linked_provider_returns_error(self):
         self.social.delete()

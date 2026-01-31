@@ -31,6 +31,10 @@ class MusicProfileSerializer(serializers.ModelSerializer):
             'favorite_artists',
             'favorite_albums',
             'favorite_tracks',
+            'onboarding_completed_at',
+            'city_lat',
+            'city_lng',
+            'custom_data',
             'clout',
             'top_genre',
             'created_at',
@@ -68,7 +72,7 @@ class GlobePointSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MusicProfile
-        fields = ['id', 'username', 'lat', 'lng', 'clout', 'top_genre', 'display_name']
+        fields = ['id', 'username', 'lat', 'lng', 'clout', 'top_genre', 'display_name', 'location']
 
     def get_top_genre(self, obj):
         genres = obj.favorite_genres

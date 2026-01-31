@@ -13,9 +13,9 @@ class RecommendationEndpointTests(APITestCase):
     def setUp(self):
         self.user = JukeUser.objects.create_user(username='tester', password='secret', email='tester@example.com')
 
-    def test_requires_authentication(self):
+    def test_requires_authentication_returns_unauthorized(self):
         response = self.client.post(self.url, data={}, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     @mock.patch('recommender.views.client.fetch_recommendations')
     def test_returns_engine_payload(self, mock_fetch):

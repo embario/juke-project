@@ -1,3 +1,5 @@
+![Juke logo](branding/juke/appicon-with-word.svg)
+
 # Juke Platform
 
 Juke is a music intelligence platform that unifies catalog ingestion, playback control, and recommendation orchestration behind a single backend. It ships with a React-based analyst console, native mobile clients, and a Power Hour companion app (ShotClock) that builds on the same APIs.

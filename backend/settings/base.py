@@ -247,10 +247,9 @@ DATABASES = {
 # Application definition
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
-
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 20,
 }
@@ -303,6 +302,10 @@ CELERY_TASK_ROUTES = {
 CELERY_BEAT_SCHEDULE = {
     'sync-spotify-genres-daily': {
         'task': 'catalog.tasks.sync_spotify_genres',
+        'schedule': 60 * 60 * 24,  # 24 hours
+    },
+    'refresh-featured-genres-daily': {
+        'task': 'catalog.tasks.refresh_featured_genres',
         'schedule': 60 * 60 * 24,  # 24 hours
     },
 }

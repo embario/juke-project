@@ -36,3 +36,25 @@ export async function fetchUserProfile(
     token,
   });
 }
+
+export type OnlineUsersResponse = {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: MusicProfile[];
+};
+
+export async function fetchOnlineUsers(
+  token: string | null,
+  limit = 10,
+  offset = 0,
+): Promise<OnlineUsersResponse | MusicProfile[]> {
+  return apiClient.get<OnlineUsersResponse | MusicProfile[]>('/api/v1/music-profiles/', {
+    token,
+    query: {
+      online: 'true',
+      limit,
+      offset,
+    },
+  });
+}

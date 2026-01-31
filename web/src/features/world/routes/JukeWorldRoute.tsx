@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import JukeGlobe from '../components/JukeGlobe';
 import GlobeOverlayNav from '../components/GlobeOverlayNav';
@@ -8,6 +8,8 @@ import { useUserDetail } from '../hooks/useUserDetail';
 import { GlobePoint } from '../types';
 import { useAuth } from '../../auth/hooks/useAuth';
 import type { GlobeMethods } from 'react-globe.gl';
+import { fetchMyProfile } from '../../profiles/api/profileApi';
+import { fetchOnlineUsers, fetchUserProfile } from '../api/worldApi';
 
 /**
  * Approximate bounding box visible from camera POV at given altitude.
@@ -39,12 +41,23 @@ export default function JukeWorldRoute() {
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const [selectedPoint, setSelectedPoint] = useState<GlobePoint | null>(null);
   const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null);
+  const [globeReady, setGlobeReady] = useState(false);
+  const [initialDataLoaded, setInitialDataLoaded] = useState(false);
+  const [selfPoint, setSelfPoint] = useState<GlobePoint | null>(null);
+  const [showUserList, setShowUserList] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState<GlobePoint[]>([]);
+  const [onlineCount, setOnlineCount] = useState(0);
+  const [onlineOffset, setOnlineOffset] = useState(0);
+  const [onlineLoading, setOnlineLoading] = useState(false);
+  const [hexUsers, setHexUsers] = useState<GlobePoint[]>([]);
+  const [hexOpen, setHexOpen] = useState(false);
   const initialLoadDone = useRef(false);
   const welcomeHandled = useRef(false);
   const welcomeSelectionDone = useRef(false);
   const welcomeTargetRef = useRef<{ username?: string; lat?: number; lng?: number } | null>(null);
   const globeRef = useRef<GlobeMethods | null>(null);
-  const { points: apiPoints, loadPoints } = useGlobePoints(token);
+  const lastCameraRef = useRef<{ lat: number; lng: number; altitude: number } | null>(null);
+  const { points: apiPoints, loadPoints, loading: pointsLoading } = useGlobePoints(token);
   const { userDetail, loading: userLoading, loadUser, clearUser } = useUserDetail(token);
 
   // Handle window resize
@@ -67,9 +80,131 @@ export default function JukeWorldRoute() {
     }
   }, [loadPoints]);
 
-  // Handle welcome user from onboarding
   useEffect(() => {
+    if (!pointsLoading && initialLoadDone.current) {
+      setInitialDataLoaded(true);
+    }
+  }, [pointsLoading]);
+
+  useEffect(() => {
+    if (!token || !username) {
+      setSelfPoint(null);
+      return;
+    }
+
+    let active = true;
+    const loadSelf = async () => {
+      try {
+        const profile = await fetchMyProfile(token);
+        if (!active) return;
+        if (typeof profile.city_lat !== 'number' || typeof profile.city_lng !== 'number') {
+          return;
+        }
+        const clout = typeof profile.clout === 'number' ? profile.clout : 0.1;
+        setSelfPoint({
+          id: profile.id,
+          username: profile.username,
+          lat: profile.city_lat,
+          lng: profile.city_lng,
+          clout,
+          top_genre: profile.top_genre ?? 'other',
+          display_name: profile.display_name ?? profile.username,
+          location: profile.location,
+        });
+      } catch {
+        if (active) {
+          setSelfPoint(null);
+        }
+      }
+    };
+
+    void loadSelf();
+    return () => {
+      active = false;
+    };
+  }, [token, username]);
+
+  useEffect(() => {
+    if (!token) {
+      setOnlineUsers([]);
+      setOnlineCount(0);
+      return;
+    }
+
+    let active = true;
+    const loadOnline = async () => {
+      setOnlineLoading(true);
+      try {
+        const response = await fetchOnlineUsers(token, 10, onlineOffset);
+        if (!active) return;
+        if (Array.isArray(response)) {
+          setOnlineUsers(
+            response.map((profile) => ({
+              id: profile.id,
+              username: profile.username,
+              lat: profile.city_lat ?? 0,
+              lng: profile.city_lng ?? 0,
+              clout: profile.clout ?? 0,
+              top_genre: profile.top_genre ?? 'other',
+              display_name: profile.display_name ?? profile.username,
+              location: profile.location,
+            })),
+          );
+          setOnlineCount(response.length);
+        } else {
+          setOnlineUsers(
+            response.results.map((profile) => ({
+              id: profile.id,
+              username: profile.username,
+              lat: profile.city_lat ?? 0,
+              lng: profile.city_lng ?? 0,
+              clout: profile.clout ?? 0,
+              top_genre: profile.top_genre ?? 'other',
+              display_name: profile.display_name ?? profile.username,
+              location: profile.location,
+            })),
+          );
+          setOnlineCount(response.count);
+        }
+      } catch {
+        if (active) {
+          setOnlineUsers([]);
+          setOnlineCount(0);
+        }
+      } finally {
+        if (active) {
+          setOnlineLoading(false);
+        }
+      }
+    };
+
+    void loadOnline();
+    return () => {
+      active = false;
+    };
+  }, [token, onlineOffset]);
+
+  const readWelcomeState = useCallback(() => {
     const state = location.state as WelcomeState | null;
+    const params = new URLSearchParams(location.search);
+    const welcomeFromQuery = params.get('welcome') === '1' || params.get('welcome') === 'true';
+    const focusLat = params.get('focusLat');
+    const focusLng = params.get('focusLng');
+    const focusUsername = params.get('focusUsername');
+    const parsedLat = focusLat ? Number(focusLat) : undefined;
+    const parsedLng = focusLng ? Number(focusLng) : undefined;
+
+    return {
+      welcomeUser: state?.welcomeUser || welcomeFromQuery,
+      focusLat: state?.focusLat ?? (Number.isFinite(parsedLat) ? parsedLat : undefined),
+      focusLng: state?.focusLng ?? (Number.isFinite(parsedLng) ? parsedLng : undefined),
+      focusUsername: state?.focusUsername ?? focusUsername ?? undefined,
+    } satisfies WelcomeState;
+  }, [location.search, location.state]);
+
+  // Handle welcome user from onboarding (state or query params)
+  useEffect(() => {
+    const state = readWelcomeState();
     if (state?.welcomeUser && !welcomeHandled.current) {
       welcomeHandled.current = true;
       if (state.focusLat != null && state.focusLng != null) {
@@ -108,15 +243,15 @@ export default function JukeWorldRoute() {
         });
       }
 
-      // Clear location state to prevent re-triggering
-      window.history.replaceState({}, document.title);
+      // Clear location state + query params to prevent re-triggering
+      window.history.replaceState({}, document.title, window.location.pathname);
 
       return () => {
         clearTimeout(showTimer);
         clearTimeout(hideTimer);
       };
     }
-  }, [location.state, username, loadPoints]);
+  }, [readWelcomeState, username, loadPoints]);
 
   useEffect(() => {
     const target = welcomeTargetRef.current;
@@ -172,6 +307,16 @@ export default function JukeWorldRoute() {
   // Camera change handler — triggers LOD re-filter
   const handleCameraChange = useCallback(
     (pov: { lat: number; lng: number; altitude: number }) => {
+      const last = lastCameraRef.current;
+      if (last) {
+        const latDelta = Math.abs(pov.lat - last.lat);
+        const lngDelta = Math.abs(pov.lng - last.lng);
+        const altDelta = Math.abs(pov.altitude - last.altitude);
+        if (latDelta < 0.3 && lngDelta < 0.3 && altDelta < 0.05) {
+          return;
+        }
+      }
+      lastCameraRef.current = pov;
       const zoom = Math.max(1, Math.min(20, Math.round(20 - pov.altitude * 5)));
       const latSpan = Math.min(180, pov.altitude * 40);
       const lngSpan = Math.min(360, pov.altitude * 60);
@@ -186,15 +331,69 @@ export default function JukeWorldRoute() {
     [loadPoints],
   );
 
-  const points = apiPoints;
+  const points = useMemo(() => {
+    if (!selfPoint) return apiPoints;
+    const hasSelf = apiPoints.some((point) => point.username === selfPoint.username);
+    if (hasSelf) return apiPoints;
+    return [selfPoint, ...apiPoints];
+  }, [apiPoints, selfPoint]);
+
+  const focusPoint = useCallback((point: GlobePoint) => {
+    if (globeRef.current) {
+      globeRef.current.pointOfView(
+        { lat: point.lat, lng: point.lng, altitude: 0.55 },
+        1200,
+      );
+    }
+  }, []);
+
+  const focusUserByUsername = useCallback(
+    async (user: GlobePoint) => {
+      const point = points.find((candidate) => candidate.username === user.username);
+      if (point) {
+        focusPoint(point);
+        return;
+      }
+      if (!token) return;
+      try {
+        const profile = await fetchUserProfile(user.username, token);
+        if (typeof profile.city_lat !== 'number' || typeof profile.city_lng !== 'number') {
+          return;
+        }
+        focusPoint({
+          id: profile.id,
+          username: profile.username,
+          lat: profile.city_lat,
+          lng: profile.city_lng,
+          clout: profile.clout ?? 0.1,
+          top_genre: profile.top_genre ?? 'other',
+          display_name: profile.display_name ?? profile.username,
+          location: profile.location,
+        });
+      } catch {
+        // Ignore failures; still show the modal if available.
+      }
+    },
+    [focusPoint, points, token],
+  );
+
+  const handleHexClick = useCallback((hex: object) => {
+    const pointsInHex = (hex as { points?: GlobePoint[] }).points ?? [];
+    setHexUsers(pointsInHex.slice(0, 40));
+    setHexOpen(true);
+  }, []);
+
+  const handleHexHover = useCallback(() => {}, []);
+
 
   // Handle point click
   const handlePointClick = useCallback(
     (point: GlobePoint) => {
       setSelectedPoint(point);
       loadUser(point.username);
+      focusPoint(point);
     },
-    [loadUser],
+    [loadUser, focusPoint],
   );
 
   const handleCloseModal = useCallback(() => {
@@ -215,7 +414,7 @@ export default function JukeWorldRoute() {
       }}
     >
       {/* Globe */}
-      <div style={{ position: 'absolute', inset: 0 }}>
+      <div style={{ position: 'absolute', inset: 0, touchAction: 'none' }}>
         <JukeGlobe
           points={points}
           width={dimensions.width}
@@ -223,6 +422,9 @@ export default function JukeWorldRoute() {
           globeRef={globeRef}
           onPointClick={handlePointClick}
           onCameraChange={handleCameraChange}
+          onHexClick={handleHexClick}
+          onHexHover={handleHexHover}
+          onGlobeReady={() => setGlobeReady(true)}
         />
       </div>
 
@@ -280,22 +482,29 @@ export default function JukeWorldRoute() {
         />
       )}
 
+
       {/* Point count HUD */}
-      <div
+      <button
+        type="button"
+        onClick={() => setShowUserList((prev) => !prev)}
         style={{
           position: 'absolute',
           top: 70,
           left: 24,
-          background: 'rgba(0,0,0,0.6)',
+          background: 'rgba(0,0,0,0.65)',
           backdropFilter: 'blur(8px)',
-          borderRadius: 8,
-          padding: '8px 14px',
+          borderRadius: 999,
+          padding: '8px 16px',
           zIndex: 10,
           fontFamily: 'system-ui, -apple-system, sans-serif',
           display: 'flex',
           alignItems: 'center',
           gap: 8,
+          cursor: 'pointer',
+          border: '1px solid rgba(255,255,255,0.15)',
+          color: '#fff',
         }}
+        aria-expanded={showUserList}
       >
         <div
           style={{
@@ -303,17 +512,213 @@ export default function JukeWorldRoute() {
             height: 8,
             borderRadius: '50%',
             background: '#00e5ff',
-            boxShadow: '0 0 6px #00e5ff',
+            boxShadow: '0 0 8px #00e5ff',
             animation: 'pulse 2s ease-in-out infinite',
           }}
         />
-        <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', fontWeight: 500 }}>
-          {points.length.toLocaleString()} users visible
+        <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', fontWeight: 600 }}>
+          {onlineCount.toLocaleString()} users online
         </span>
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
-          / — total
-        </span>
-      </div>
+        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>▼</span>
+      </button>
+
+      {showUserList && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 112,
+            left: 24,
+            width: 320,
+            maxHeight: 360,
+            overflowY: 'auto',
+            background: 'rgba(0,0,0,0.85)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: 10,
+            padding: 8,
+            zIndex: 11,
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+          }}
+        >
+          {onlineLoading ? (
+            <div style={{ padding: '12px 10px', fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>
+              Loading online users...
+            </div>
+          ) : null}
+          {!onlineLoading && onlineUsers.length === 0 ? (
+            <div style={{ padding: '12px 10px', fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>
+              No online users right now.
+            </div>
+          ) : null}
+          {onlineUsers.map((point) => (
+            <button
+              key={point.username}
+              onClick={() => {
+                handlePointClick(point);
+                void focusUserByUsername(point);
+                setShowUserList(false);
+              }}
+              style={{
+                width: '100%',
+                textAlign: 'left',
+                background: 'transparent',
+                border: 'none',
+                padding: '8px 10px',
+                color: '#fff',
+                cursor: 'pointer',
+                borderRadius: 6,
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+            >
+              <div style={{ fontSize: 13, fontWeight: 600 }}>
+                {point.display_name || point.username}
+              </div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>
+                @{point.username} • {point.location ?? `${point.lat.toFixed(2)}, ${point.lng.toFixed(2)}`}
+              </div>
+            </button>
+          ))}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              padding: '8px 6px 4px',
+              gap: 8,
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => setOnlineOffset((prev) => Math.max(0, prev - 10))}
+              disabled={onlineOffset === 0}
+              style={{
+                flex: 1,
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                color: '#fff',
+                borderRadius: 8,
+                padding: '6px 8px',
+                cursor: onlineOffset === 0 ? 'not-allowed' : 'pointer',
+                opacity: onlineOffset === 0 ? 0.5 : 1,
+                fontSize: 12,
+              }}
+            >
+              Prev
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const nextOffset = onlineOffset + 10;
+                if (nextOffset < onlineCount) setOnlineOffset(nextOffset);
+              }}
+              disabled={onlineOffset + 10 >= onlineCount}
+              style={{
+                flex: 1,
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                color: '#fff',
+                borderRadius: 8,
+                padding: '6px 8px',
+                cursor: onlineOffset + 10 >= onlineCount ? 'not-allowed' : 'pointer',
+                opacity: onlineOffset + 10 >= onlineCount ? 0.5 : 1,
+                fontSize: 12,
+              }}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
+      {hexOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 120,
+            left: 24,
+            width: 320,
+            maxHeight: 360,
+            overflowY: 'auto',
+            background: 'rgba(5,5,15,0.92)',
+            border: '1px solid rgba(255,255,255,0.12)',
+            borderRadius: 12,
+            padding: 10,
+            zIndex: 12,
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+            boxShadow: '0 12px 30px rgba(0,0,0,0.35)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.4px' }}>
+              USERS IN HEX
+            </div>
+            <button
+              onClick={() => setHexOpen(false)}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'rgba(255,255,255,0.6)',
+                cursor: 'pointer',
+                fontSize: 16,
+              }}
+            >
+              ×
+            </button>
+          </div>
+          {hexUsers.length === 0 ? (
+            <div style={{ padding: '8px 4px', fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>
+              No users in this area.
+            </div>
+          ) : null}
+          {hexUsers.map((point) => (
+            <button
+              key={`hex-${point.username}`}
+              onClick={() => {
+                handlePointClick(point);
+                void focusUserByUsername(point);
+              }}
+              style={{
+                width: '100%',
+                textAlign: 'left',
+                background: 'transparent',
+                border: 'none',
+                padding: '8px 10px',
+                color: '#fff',
+                cursor: 'pointer',
+                borderRadius: 6,
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+            >
+              <div style={{ fontSize: 13, fontWeight: 600 }}>
+                {point.display_name || point.username}
+              </div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>
+                @{point.username} • {point.location ?? `${point.lat.toFixed(2)}, ${point.lng.toFixed(2)}`}
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Loading veil */}
+      {!globeReady || !initialDataLoaded ? (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'radial-gradient(circle at top, rgba(5,10,30,0.9), rgba(2,2,10,0.98))',
+            zIndex: 4,
+            color: '#fff',
+            fontFamily: 'Space Grotesk, sans-serif',
+            letterSpacing: '0.3px',
+          }}
+        >
+          Loading Juke World...
+        </div>
+      ) : null}
 
       {/* Genre legend */}
       <div

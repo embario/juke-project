@@ -4,36 +4,36 @@ from juke_auth.models import JukeUser, MusicProfile
 
 # Major city centroids with population weights for realistic clustering
 CITY_CENTERS = [
-    (40.71, -74.01, 8, 'New York'),
-    (34.05, -118.24, 7, 'Los Angeles'),
-    (51.51, -0.13, 7, 'London'),
-    (48.86, 2.35, 5, 'Paris'),
-    (35.68, 139.69, 6, 'Tokyo'),
-    (-23.55, -46.63, 5, 'São Paulo'),
-    (19.43, -99.13, 4, 'Mexico City'),
-    (55.76, 37.62, 4, 'Moscow'),
-    (28.61, 77.23, 5, 'Delhi'),
-    (39.91, 116.40, 5, 'Beijing'),
-    (-33.87, 151.21, 4, 'Sydney'),
-    (37.57, 126.98, 4, 'Seoul'),
-    (52.52, 13.41, 4, 'Berlin'),
-    (41.90, 12.50, 3, 'Rome'),
-    (43.65, -79.38, 4, 'Toronto'),
-    (41.88, -87.63, 5, 'Chicago'),
-    (30.04, 31.24, 3, 'Cairo'),
-    (-34.60, -58.38, 3, 'Buenos Aires'),
-    (1.35, 103.82, 3, 'Singapore'),
-    (13.76, 100.50, 3, 'Bangkok'),
-    (25.20, 55.27, 3, 'Dubai'),
-    (59.33, 18.07, 3, 'Stockholm'),
-    (45.46, 9.19, 3, 'Milan'),
-    (29.76, -95.37, 4, 'Houston'),
-    (33.75, -84.39, 4, 'Atlanta'),
-    (6.52, 3.38, 3, 'Lagos'),
-    (-1.29, 36.82, 2, 'Nairobi'),
-    (35.69, 51.39, 2, 'Tehran'),
-    (14.60, 120.98, 3, 'Manila'),
-    (22.32, 114.17, 3, 'Hong Kong'),
+    (40.71, -74.01, 8, 'New York', 'USA'),
+    (34.05, -118.24, 7, 'Los Angeles', 'USA'),
+    (51.51, -0.13, 7, 'London', 'UK'),
+    (48.86, 2.35, 5, 'Paris', 'France'),
+    (35.68, 139.69, 6, 'Tokyo', 'Japan'),
+    (-23.55, -46.63, 5, 'São Paulo', 'Brazil'),
+    (19.43, -99.13, 4, 'Mexico City', 'Mexico'),
+    (55.76, 37.62, 4, 'Moscow', 'Russia'),
+    (28.61, 77.23, 5, 'Delhi', 'India'),
+    (39.91, 116.40, 5, 'Beijing', 'China'),
+    (-33.87, 151.21, 4, 'Sydney', 'Australia'),
+    (37.57, 126.98, 4, 'Seoul', 'South Korea'),
+    (52.52, 13.41, 4, 'Berlin', 'Germany'),
+    (41.90, 12.50, 3, 'Rome', 'Italy'),
+    (43.65, -79.38, 4, 'Toronto', 'Canada'),
+    (41.88, -87.63, 5, 'Chicago', 'USA'),
+    (30.04, 31.24, 3, 'Cairo', 'Egypt'),
+    (-34.60, -58.38, 3, 'Buenos Aires', 'Argentina'),
+    (1.35, 103.82, 3, 'Singapore', 'Singapore'),
+    (13.76, 100.50, 3, 'Bangkok', 'Thailand'),
+    (25.20, 55.27, 3, 'Dubai', 'UAE'),
+    (59.33, 18.07, 3, 'Stockholm', 'Sweden'),
+    (45.46, 9.19, 3, 'Milan', 'Italy'),
+    (29.76, -95.37, 4, 'Houston', 'USA'),
+    (33.75, -84.39, 4, 'Atlanta', 'USA'),
+    (6.52, 3.38, 3, 'Lagos', 'Nigeria'),
+    (-1.29, 36.82, 2, 'Nairobi', 'Kenya'),
+    (35.69, 51.39, 2, 'Tehran', 'Iran'),
+    (14.60, 120.98, 3, 'Manila', 'Philippines'),
+    (22.32, 114.17, 3, 'Hong Kong', 'China'),
 ]
 
 SUPER_GENRES = ['pop', 'rock', 'country', 'rap', 'folk', 'jazz', 'classical']
@@ -102,7 +102,7 @@ class Command(BaseCommand):
                 lng = round(city[1] + (random.random() - 0.5) * spread, 2)
 
                 # Power-law clout distribution
-                clout = round(random.random() ** 2.5, 2)
+                clout = round(0.1 + random.random() * 0.7, 2)
 
                 # Genre assignment (weighted toward pop/rock/rap)
                 genre_weights = [3, 2.5, 1, 2, 1, 1, 0.5]
@@ -127,10 +127,12 @@ class Command(BaseCommand):
                     min(2, len(SUPER_GENRES) - 1),
                 )
 
+                city_name = city[3]
+                country_name = city[4]
                 profiles.append({
                     'display_name': f'{adj.capitalize()} {noun.capitalize()}',
-                    'tagline': f'{genre.capitalize()} enthusiast from {city[3]}',
-                    'location': city[3],
+                    'tagline': f'{genre.capitalize()} enthusiast from {city_name}',
+                    'location': f'{city_name}, {country_name}',
                     'city_lat': lat,
                     'city_lng': lng,
                     'clout': clout,
